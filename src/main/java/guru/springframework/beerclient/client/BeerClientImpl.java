@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static guru.springframework.beerclient.configs.WebClientProperties.BEER_V1_PATH;
+import static guru.springframework.beerclient.configs.WebClientProperties.BEER_V1_UPC_PATH;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,13 @@ public class BeerClientImpl implements BeerClient {
 
     @Override
     public Mono<BeerDto> getBeerById(UUID beerId, Boolean showInventoryOnHand) {
-        return null;
+        return webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder.path(BEER_V1_PATH + "/{beerId}")
+                        .queryParamIfPresent("showInventoryOnHand", Optional.ofNullable(showInventoryOnHand))
+                        .build(beerId))
+                .retrieve()
+                .bodyToMono(BeerDto.class);
     }
 
     @Override
@@ -55,7 +62,12 @@ public class BeerClientImpl implements BeerClient {
     }
 
     @Override
-    public Mono<BeerDto> getBeerByUpc(String upc, Boolean showInventoryOnHand) {
-        return null;
+    public Mono<BeerDto> getBeerByUpc(String upc) {
+        return webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder.path(BEER_V1_UPC_PATH + "/{upc}")
+                        .build(upc))
+                .retrieve()
+                .bodyToMono(BeerDto.class);
     }
 }
